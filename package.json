@@ -1,0 +1,22 @@
+{
+  "name": "pa-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server/server.js",
+  "scripts": {
+    "test": "export NODE_ENV=test || \"SET NODE_ENV=test\" && nodemon --exec 'npm start'",
+    "start": "node server/server.js"
+  },
+  "engines": {
+    "node": "10.19.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "config": "^3.3.6",
+    "express": "^4.17.1",
+    "mongodb": "^3.6.9",
+    "mongoose": "^5.12.13"
+  }
+}
