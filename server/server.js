@@ -32,6 +32,23 @@ app.post('/api/users', (req, res) => {
   );
 });
 
+app.post('/api/login', (req, res) => {
+  const body = _.pick(req.body, ['email', 'password']);
+
+  User.findByCredentials(body.email, body.password).then((user) => {
+    user.generateAuthToken().then(
+      (token) => {
+        res.header('x-auth', token).status(200).send(token);
+      },
+      (err) => {
+        res.status(400).json({
+          Error: `something went wrong. ${err}`,
+        });
+      }
+    );
+  });
+});
+
 app.listen(config.get('PORT'), () => {
   console.log(`Server is running on port ${config.get('PORT')}`);
 });
