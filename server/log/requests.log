@@ -1,1 +1,1 @@
-::1 - - [13/Jun/2021:22:22:44 +0000] "PATCH /api/payment/60c67c0e65f9171cb211a97c HTTP/1.1" 200 29 "-" "PostmanRuntime/7.28.0"
+::1 - - [13/Jun/2021:22:47:13 +0000] "POST /api/receive HTTP/1.1" 200 36 "-" "PostmanRuntime/7.28.0"
