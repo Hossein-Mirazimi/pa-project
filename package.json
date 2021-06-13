@@ -17,10 +17,13 @@
     "bcryptjs": "^2.4.3",
     "config": "^3.3.6",
     "express": "^4.17.1",
+    "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
     "mongodb": "^3.6.9",
     "mongoose": "^5.12.13",
-    "validator": "^13.6.0"
+    "morgan": "^1.10.0",
+    "validator": "^13.6.0",
+    "winston": "^3.3.3"
   }
 }

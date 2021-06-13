@@ -109,6 +109,24 @@ UserSchema.statics.findByCredentials = function (email, password) {
   });
 };
 
+UserSchema.statics.findByToken = function (token) {
+  let User = this;
+
+  let decoded;
+
+  try {
+    decoded = jwt.verify(token, config.get('JWT_SECRET'));
+  } catch (e) {
+    return Promise.reject(e);
+  }
+
+  return User.findOne({
+    _id: decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth',
+  });
+};
+
 let User = mongoose.model('User', UserSchema);
 
 module.exports = {
