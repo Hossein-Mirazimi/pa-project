@@ -9,6 +9,7 @@ const winston = require('winston');
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
+const persianDate = require('persian-date');
 
 const { User } = require('./model/user');
 const { authenticate } = require('./middleware/authenticate');
@@ -16,6 +17,7 @@ const { authenticate } = require('./middleware/authenticate');
 console.log(`*** ${String(config.get('level')).toUpperCase()} ***`);
 
 const app = express();
+
 const requestLogger = fs.createWriteStream(
   path.join(__dirname, 'log/requests.log')
 );
@@ -27,6 +29,10 @@ const logger = winston.createLogger({
     }),
   ],
 });
+
+persianDate.toLocale('en');
+const date = new persianDate().format('YYYY/M/DD');
+
 app.use(express.json());
 app.use(helmet());
 app.use(
@@ -35,7 +41,7 @@ app.use(
   })
 );
 
-app.post('/api/users', authenticate, async (req, res) => {
+app.post('/api/users', async (req, res) => {
   // *** Async/await ***
   try {
     const body = _.pick(req.body, ['fullName', 'email', 'password']);
@@ -98,6 +104,40 @@ app.post('/api/login', async (req, res) => {
   //     }
   //   );
   // });
+});
+
+app.post('/api/payment', authenticate, async (req, res) => {
+  try {
+    const body = _.pick(req.body, ['info', 'amount']);
+
+    let user = await User.findOneAndUpdate(
+      {
+        _id: req.user._id,
+      },
+      {
+        $push: {
+          payment: {
+            info: body.info,
+            amount: body.amount,
+            date,
+          },
+        },
+      }
+    );
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not found',
+      });
+    }
+
+    res.status(200).json({
+      message: 'Payment has been saved',
+    });
+  } catch (e) {
+    res.status(400).json({
+      error: `something went wrong ${e}`,
+    });
+  }
 });
 
 app.listen(config.get('PORT'), () => {
