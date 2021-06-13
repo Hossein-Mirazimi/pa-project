@@ -312,6 +312,41 @@ app.delete('/api/receive/:id', authenticate, async (req, res) => {
   }
 });
 
+app.patch('/api/receive/:id', authenticate, async (req, res) => {
+  let { id } = req.params;
+  try {
+    let body = _.pick(req.body, ['info', 'amount', 'date']);
+
+    let user = await User.findOneAndUpdate(
+      {
+        _id: req.user._id,
+        'receive._id': id,
+      },
+      {
+        $set: {
+          'receive.$.info': body.info,
+          'receive.$.amount': body.amount,
+          'receive.$.date': body.date,
+        },
+      }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not Found',
+      });
+    }
+
+    res.status(200).json({
+      message: 'Receive updated',
+    });
+  } catch (e) {
+    res.status(400).json({
+      error: `something went wrong ${e}`,
+    });
+  }
+});
+
 app.listen(config.get('PORT'), () => {
   // console.log(`Server is running on port ${config.get('PORT')}`);
 
