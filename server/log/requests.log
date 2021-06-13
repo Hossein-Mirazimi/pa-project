@@ -1,1 +1,3 @@
-::1 - - [13/Jun/2021:22:47:13 +0000] "POST /api/receive HTTP/1.1" 200 36 "-" "PostmanRuntime/7.28.0"
+::1 - - [13/Jun/2021:22:51:47 +0000] "GET /api/receives HTTP/1.1" 200 86 "-" "PostmanRuntime/7.28.0"
+::1 - - [13/Jun/2021:22:52:34 +0000] "POST /api/receive HTTP/1.1" 200 36 "-" "PostmanRuntime/7.28.0"
+::1 - - [13/Jun/2021:22:52:37 +0000] "GET /api/receives HTTP/1.1" 200 169 "-" "PostmanRuntime/7.28.0"

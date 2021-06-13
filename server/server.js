@@ -261,6 +261,26 @@ app.post('/api/receive', authenticate, async (req, res) => {
   }
 });
 
+app.get('/api/receives', authenticate, async (req, res) => {
+  try {
+    let user = await User.findOne({
+      _id: req.user._id,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not found',
+      });
+    }
+
+    res.status(200).send(user.receive);
+  } catch (e) {
+    res.status(400).json({
+      error: `something went wrong ${e}`,
+    });
+  }
+});
+
 app.listen(config.get('PORT'), () => {
   // console.log(`Server is running on port ${config.get('PORT')}`);
 
