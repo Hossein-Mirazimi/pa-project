@@ -13,40 +13,69 @@ const app = express();
 
 app.use(express.json());
 
-app.post('/api/users', (req, res) => {
-  const body = _.pick(req.body, ['fullName', 'email', 'password']);
+app.post('/api/users', async (req, res) => {
+  // *** Async/await ***
+  try {
+    const body = _.pick(req.body, ['fullName', 'email', 'password']);
+    let user = new User(body);
 
-  console.log(body);
+    await user.save();
 
-  let user = new User(body);
+    res.status(200).send(user);
+  } catch (e) {
+    res.status(400).json({
+      Error: `something went wrong. ${e}`,
+    });
+  }
 
-  user.save().then(
-    (user) => {
-      res.status(200).send(user);
-    },
-    (err) => {
-      res.status(400).json({
-        Error: `something went wrong. ${err}`,
-      });
-    }
-  );
+  // *** Promise ***
+  // const body = _.pick(req.body, ['fullName', 'email', 'password']);
+
+  // console.log(body);
+
+  // let user = new User(body);
+
+  // user.save().then(
+  //   (user) => {
+  //     res.status(200).send(user);
+  //   },
+  //   (err) => {
+  //     res.status(400).json({
+  //       Error: `something went wrong. ${err}`,
+  //     });
+  //   }
+  // );
 });
 
-app.post('/api/login', (req, res) => {
-  const body = _.pick(req.body, ['email', 'password']);
+app.post('/api/login', async (req, res) => {
+  // *** Async/await ***
+  try {
+    const body = _.pick(req.body, ['email', 'password']);
 
-  User.findByCredentials(body.email, body.password).then((user) => {
-    user.generateAuthToken().then(
-      (token) => {
-        res.header('x-auth', token).status(200).send(token);
-      },
-      (err) => {
-        res.status(400).json({
-          Error: `something went wrong. ${err}`,
-        });
-      }
-    );
-  });
+    let user = await User.findByCredentials(body.email, body.password);
+    let token = await user.generateAuthToken();
+
+    res.header('x-auth', token).status(200).send(token);
+  } catch (e) {
+    res.status(400).json({
+      Error: `something went wrong. ${e}`,
+    });
+  }
+  // *** Promise ***
+  // const body = _.pick(req.body, ['email', 'password']);
+
+  // User.findByCredentials(body.email, body.password).then((user) => {
+  //   user.generateAuthToken().then(
+  //     (token) => {
+  //       res.header('x-auth', token).status(200).send(token);
+  //     },
+  //     (err) => {
+  //       res.status(400).json({
+  //         Error: `something went wrong. ${err}`,
+  //       });
+  //     }
+  //   );
+  // });
 });
 
 app.listen(config.get('PORT'), () => {
