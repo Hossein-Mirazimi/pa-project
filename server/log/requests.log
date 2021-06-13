@@ -1,5 +1,1 @@
-::1 - - [13/Jun/2021:21:40:50 +0000] "POST /api/users HTTP/1.1" 200 99 "-" "PostmanRuntime/7.28.0"
-::1 - - [13/Jun/2021:21:40:54 +0000] "POST /api/login HTTP/1.1" 200 171 "-" "PostmanRuntime/7.28.0"
-::1 - - [13/Jun/2021:21:41:59 +0000] "POST /api/payment HTTP/1.1" 200 36 "-" "PostmanRuntime/7.28.0"
-::1 - - [13/Jun/2021:21:43:42 +0000] "POST /api/payment HTTP/1.1" 200 36 "-" "PostmanRuntime/7.28.0"
-::1 - - [13/Jun/2021:21:43:54 +0000] "POST /api/payment HTTP/1.1" 200 36 "-" "PostmanRuntime/7.28.0"
+::1 - - [13/Jun/2021:22:22:44 +0000] "PATCH /api/payment/60c67c0e65f9171cb211a97c HTTP/1.1" 200 29 "-" "PostmanRuntime/7.28.0"

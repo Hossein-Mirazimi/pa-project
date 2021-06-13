@@ -56,6 +56,23 @@ let UserSchema = new mongoose.Schema({
       },
     },
   ],
+  receive: [
+    {
+      info: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      amount: {
+        type: Number,
+        required: true,
+      },
+      date: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 UserSchema.methods.toJSON = function () {

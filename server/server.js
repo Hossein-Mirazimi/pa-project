@@ -140,6 +140,93 @@ app.post('/api/payment', authenticate, async (req, res) => {
   }
 });
 
+app.get('/api/payments', authenticate, async (req, res) => {
+  try {
+    let user = await User.findOne({
+      _id: req.user._id,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not Found',
+      });
+    }
+
+    res.status(200).send(user.payment);
+  } catch (e) {
+    res.status(400).json({
+      error: `something went wrong ${e}`,
+    });
+  }
+});
+
+app.delete('/api/payment/:id', authenticate, async (req, res) => {
+  let id = req.params.id;
+
+  try {
+    let user = await User.findOneAndUpdate(
+      {
+        _id: req.user._id,
+        'payment._id': id,
+      },
+      {
+        $pull: {
+          payment: {
+            _id: id,
+          },
+        },
+      }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not Found',
+      });
+    }
+
+    res.status(200).send(user.payment);
+  } catch (e) {
+    res.status(400).json({
+      error: `something went wrong ${e}`,
+    });
+  }
+});
+
+app.patch('/api/payment/:id', authenticate, async (req, res) => {
+  let id = req.params.id;
+  let body = _.pick(req.body, ['amount', 'info', 'date']);
+
+  try {
+    let user = await User.findOneAndUpdate(
+      {
+        _id: req.user._id,
+        'payment._id': id,
+      },
+      {
+        $set: {
+          'payment.$.info': body.info,
+          'payment.$.amount': body.amount,
+          'payment.$.date': body.date,
+        },
+      }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not Found',
+      });
+    }
+
+    res.status(200).json({
+      message: 'Payment updated',
+    });
+  } catch (e) {
+    res.status(400).json({
+      error: `something went wrong ${e}`,
+    });
+  }
+});
+
 app.listen(config.get('PORT'), () => {
   // console.log(`Server is running on port ${config.get('PORT')}`);
 
