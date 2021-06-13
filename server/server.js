@@ -13,22 +13,16 @@ const persianDate = require('persian-date');
 
 const { User } = require('./model/user');
 const { authenticate } = require('./middleware/authenticate');
+const { splitDate, printRunLevel } = require('./utils/utils');
+const { logger } = require('./utils/winstonOptions');
 
-console.log(`*** ${String(config.get('level')).toUpperCase()} ***`);
+printRunLevel(config.get('level'));
 
 const app = express();
 
 const requestLogger = fs.createWriteStream(
   path.join(__dirname, 'log/requests.log')
 );
-const logger = winston.createLogger({
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({
-      filename: path.join(__dirname, 'log/server-status.log'),
-    }),
-  ],
-});
 
 persianDate.toLocale('en');
 const date = new persianDate().format('YYYY/M/DD');
@@ -347,13 +341,77 @@ app.patch('/api/receive/:id', authenticate, async (req, res) => {
   }
 });
 
+app.get('/api/paymentSum', authenticate, async (req, res) => {
+  let amount = [];
+  let theDate;
+
+  try {
+    let user = await User.findOne({
+      _id: req.user._id,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not Found',
+      });
+    }
+
+    user.payment.forEach((el) => {
+      let splitArr = splitDate(el.date);
+      theDate = new persianDate([
+        Number(splitArr[0]),
+        Number(splitArr[1]),
+        Number(splitArr[2]),
+      ]);
+
+      let toDayDate = new persianDate();
+
+      if (theDate.isSameMonth(toDayDate)) {
+        amount.push(el.amount);
+      }
+    });
+
+    res.status(200).json({
+      sum: `${_.sum(amount)}`,
+    });
+  } catch (e) {
+    res.status(400).json({
+      error: `something went wrong ${e}`,
+    });
+  }
+});
+
+app.get('/api/payment/:date', authenticate, async (req, res) => {
+  let param = req.params.date;
+  let date = param.replaceAll('-', '/');
+
+  try {
+    let user = await User.findOne({
+      _id: req.user._id,
+    });
+
+    let payments = [];
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not Found',
+      });
+    }
+
+    user.payment.forEach((el) => {
+      if (el.date === date) {
+        payments.push(el);
+      }
+    });
+
+    res.status(200).send(payments);
+  } catch (e) {
+    res.status(400).json({
+      error: `something went wrong ${e}`,
+    });
+  }
+});
+
 app.listen(config.get('PORT'), () => {
-  // console.log(`Server is running on port ${config.get('PORT')}`);
-
-  // logger.log({
-  //   level: 'info',
-  //   message: `Server is running on port ${config.get('PORT')}`,
-  // });
-
   logger.info(`Server is running on port ${config.get('PORT')}`);
 });
