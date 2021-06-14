@@ -100,6 +100,20 @@ app.post('/api/login', async (req, res) => {
   // });
 });
 
+app.delete('/api/logout', authenticate, async (req, res) => {
+  try {
+    await req.user.removeToken(req.token);
+
+    res.status(200).json({
+      message: 'Logout successFull',
+    });
+  } catch (e) {
+    res.status(400).json({
+      Error: `something went wrong. ${e}`,
+    });
+  }
+});
+
 app.post('/api/payment', authenticate, async (req, res) => {
   try {
     const body = _.pick(req.body, ['info', 'amount']);
@@ -392,12 +406,6 @@ app.get('/api/payment/:date', authenticate, async (req, res) => {
 
     let payments = [];
 
-    if (!user) {
-      return res.status(404).json({
-        error: 'User not Found',
-      });
-    }
-
     user.payment.forEach((el) => {
       if (el.date === date) {
         payments.push(el);
@@ -405,6 +413,75 @@ app.get('/api/payment/:date', authenticate, async (req, res) => {
     });
 
     res.status(200).send(payments);
+  } catch (e) {
+    res.status(400).json({
+      error: `something went wrong ${e}`,
+    });
+  }
+});
+
+app.get('/api/receiveSum', authenticate, async (req, res) => {
+  let amount = [];
+  let theDate;
+
+  try {
+    let user = await User.findOne({
+      _id: req.user._id,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not Found',
+      });
+    }
+
+    user.receive.forEach((el) => {
+      let splitArr = splitDate(el.date);
+      theDate = new persianDate([
+        Number(splitArr[0]),
+        Number(splitArr[1]),
+        Number(splitArr[2]),
+      ]);
+
+      let toDayDate = new persianDate();
+
+      if (theDate.isSameMonth(toDayDate)) {
+        amount.push(el.amount);
+      }
+    });
+
+    res.status(200).json({
+      sum: `${_.sum(amount)}`,
+    });
+  } catch (e) {
+    return res.status(404).json({
+      error: 'User not Found',
+    });
+  }
+});
+
+app.get('/api/receive/:date', authenticate, async (req, res) => {
+  let param = req.params.date;
+  let date = param.replaceAll('-', '/');
+
+  try {
+    let user = await User.findOne({ _id: req.user._id });
+
+    let receives = [];
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not Found',
+      });
+    }
+
+    user.receive.forEach((el) => {
+      if (el.date === date) {
+        receives.push(el);
+      }
+    });
+
+    res.status(200).send(receives);
   } catch (e) {
     res.status(400).json({
       error: `something went wrong ${e}`,

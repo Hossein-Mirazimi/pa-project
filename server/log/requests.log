@@ -1,1 +1,1 @@
-::1 - - [13/Jun/2021:23:06:55 +0000] "PATCH /api/receive/60c68af180b07f2860c4d03e HTTP/1.1" 200 29 "-" "PostmanRuntime/7.28.0"
+::1 - - [14/Jun/2021:00:13:53 +0000] "DELETE /api/logout HTTP/1.1" 200 32 "-" "PostmanRuntime/7.28.0"
