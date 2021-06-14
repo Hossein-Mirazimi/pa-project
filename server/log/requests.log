@@ -1,1 +1,5 @@
-::1 - - [14/Jun/2021:00:13:53 +0000] "DELETE /api/logout HTTP/1.1" 200 32 "-" "PostmanRuntime/7.28.0"
+::1 - - [14/Jun/2021:00:49:10 +0000] "POST /api/payment HTTP/1.1" 400 85 "-" "PostmanRuntime/7.28.0"
+::1 - - [14/Jun/2021:00:49:23 +0000] "POST /api/payment HTTP/1.1" 200 36 "-" "PostmanRuntime/7.28.0"
+::1 - - [14/Jun/2021:00:49:39 +0000] "POST /api/payment HTTP/1.1" 200 36 "-" "PostmanRuntime/7.28.0"
+::1 - - [14/Jun/2021:00:49:48 +0000] "POST /api/payment HTTP/1.1" 200 36 "-" "PostmanRuntime/7.28.0"
+::1 - - [14/Jun/2021:00:49:54 +0000] "POST /api/payment HTTP/1.1" 400 100 "-" "PostmanRuntime/7.28.0"

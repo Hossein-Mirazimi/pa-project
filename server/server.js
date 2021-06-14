@@ -10,10 +10,17 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 const persianDate = require('persian-date');
+const Joi = require('joi');
 
 const { User } = require('./model/user');
 const { authenticate } = require('./middleware/authenticate');
-const { splitDate, printRunLevel } = require('./utils/utils');
+const {
+  splitDate,
+  printRunLevel,
+  handleError,
+  handleMessage,
+  handleUserValidate,
+} = require('./utils/utils');
 const { logger } = require('./utils/winstonOptions');
 
 printRunLevel(config.get('level'));
@@ -104,18 +111,28 @@ app.delete('/api/logout', authenticate, async (req, res) => {
   try {
     await req.user.removeToken(req.token);
 
-    res.status(200).json({
-      message: 'Logout successFull',
-    });
+    handleMessage(res, 'Logout successFull');
   } catch (e) {
-    res.status(400).json({
-      Error: `something went wrong. ${e}`,
-    });
+    handleError(e);
   }
 });
 
 app.post('/api/payment', authenticate, async (req, res) => {
   try {
+    const paymentsJoiSchema = Joi.object({
+      info: Joi.string().min(3).required(),
+      amount: Joi.number().min(1).required(),
+    });
+
+    let validateResult = paymentsJoiSchema.validate(req.body); //Joi.va(req.body, paymentsJoiSchema);
+
+    console.log(validateResult);
+
+    if (validateResult.error) {
+      handleError(res, validateResult.error);
+      return;
+    }
+
     const body = _.pick(req.body, ['info', 'amount']);
 
     let user = await User.findOneAndUpdate(
@@ -132,19 +149,12 @@ app.post('/api/payment', authenticate, async (req, res) => {
         },
       }
     );
-    if (!user) {
-      return res.status(404).json({
-        error: 'User not found',
-      });
-    }
 
-    res.status(200).json({
-      message: 'Payment has been saved',
-    });
+    handleUserValidate(user, res);
+
+    handleMessage(res, 'Payment has been saved');
   } catch (e) {
-    res.status(400).json({
-      error: `something went wrong ${e}`,
-    });
+    handleError(res, e);
   }
 });
 
