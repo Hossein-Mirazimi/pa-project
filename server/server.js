@@ -499,6 +499,8 @@ app.get('/api/receive/:date', authenticate, async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => res.send('Hello World to my server'))
+
 app.listen(config.get('PORT'), () => {
   logger.info(`Server is running on port ${config.get('PORT')}`);
 });
